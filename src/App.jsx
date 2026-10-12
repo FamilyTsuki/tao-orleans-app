@@ -1,108 +1,184 @@
 import React, { useState } from 'react';
-import PhoneScreen from './components/PhoneScreen';
-import { Smartphone, Eye, Maximize2, SplitSquareVertical } from 'lucide-react';
 
 export default function App() {
-  const [viewMode, setViewMode] = useState('phone'); // 'phone' | 'split' | 'fullscreen'
+  // State for active bottom navigation tab
+  const [activeTab, setActiveTab] = useState('accueil'); // 'accueil' | 'horaires' | 'trafic' | 'tao'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  // Helper to show brief feedback when interacting with elements
+  const showFeedback = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 2000);
+  };
+
+  // --- Functions you can modify for your TAO work ---
+  const handleProfileClick = () => {
+    showFeedback('Profil utilisateur TAO');
+  };
+
+  const handleItineraryClick = () => {
+    showFeedback('Recherche d\'itinéraire...');
+  };
+
+  const handleSosClick = () => {
+    showFeedback('Fonction SOS déclenchée');
+  };
+
+  const handleFilterClick = () => {
+    showFeedback('Filtres du réseau (Lignes, Arrêts)');
+  };
+
+  const handleLocateClick = () => {
+    showFeedback('Centrage sur votre position à Orléans');
+  };
+
+  const handleTabClick = (tabName) => {
+    setActiveTab(tabName);
+    showFeedback(`Onglet: ${tabName.toUpperCase()}`);
+  };
 
   return (
-    <div className="min-h-screen w-full bg-[#070811] text-slate-100 flex flex-col items-center justify-center relative font-sans">
-      {/* Top Floating Control Bar for easy preview */}
-      <header className="fixed top-3 z-50 flex items-center bg-[#151728]/90 backdrop-blur-md border border-[#2b2e50] rounded-full px-3 py-1.5 shadow-2xl text-xs space-x-2">
-        <span className="font-semibold text-teal-400 pl-2 mr-1 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-          TAO Orléans
-        </span>
+    <div className="w-full h-full min-h-[100dvh] bg-[#0c0d1e] flex items-center justify-center m-0 p-0 overflow-hidden">
+      {/* Mobile Screen Container: fits 100% of any smartphone display */}
+      <div className="relative w-full h-[100dvh] max-w-[460px] bg-[#0d0f22] overflow-hidden select-none">
+        
+        {/* Authentic pixel-perfect TAO image background */}
+        <img
+          src="./tao_bg.png"
+          alt="Application TAO"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+        />
 
+        {/* =========================================================================
+            INTERACTIVE OVERLAY ZONES (Calquées sur chaque bouton de l'interface)
+            ========================================================================= */}
+
+        {/* 1. Bouton Profil (Haut Gauche) */}
         <button
           type="button"
-          onClick={() => setViewMode('phone')}
-          className={`flex items-center space-x-1.5 px-3 py-1 rounded-full transition-all ${
-            viewMode === 'phone'
-              ? 'bg-[#2b3052] text-white font-medium shadow'
-              : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <Smartphone className="w-3.5 h-3.5" />
-          <span>Cadre Mobile</span>
-        </button>
+          aria-label="Profil utilisateur"
+          onClick={handleProfileClick}
+          className="absolute top-[3.5%] left-[5%] w-[11%] h-[5%] rounded-full cursor-pointer active:opacity-60 transition-opacity z-20"
+        />
 
+        {/* 2. Barre de recherche (Haut Droite) */}
+        <div
+          className="absolute top-[3.5%] left-[19%] right-[5%] h-[5.1%] z-20 flex items-center px-4"
+          onClick={() => setIsSearchActive(true)}
+        >
+          {isSearchActive ? (
+            <input
+              type="text"
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onBlur={() => {
+                if (!searchQuery) setIsSearchActive(false);
+              }}
+              placeholder="Rechercher un arrêt, un lieu..."
+              className="w-full h-full bg-[#23213d] text-white text-[13.5px] rounded-full px-4 outline-none border border-[#4f4b75]"
+            />
+          ) : (
+            <div className="w-full h-full cursor-pointer active:opacity-60 rounded-full" />
+          )}
+        </div>
+
+        {/* 3. Bouton Itinéraire (Sous la recherche) */}
         <button
           type="button"
-          onClick={() => setViewMode('split')}
-          className={`flex items-center space-x-1.5 px-3 py-1 rounded-full transition-all ${
-            viewMode === 'split'
-              ? 'bg-[#2b3052] text-white font-medium shadow'
-              : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <SplitSquareVertical className="w-3.5 h-3.5" />
-          <span>Comparaison (Image / App)</span>
-        </button>
+          aria-label="Itinéraire"
+          onClick={handleItineraryClick}
+          className="absolute top-[9.6%] right-[5%] w-[31%] h-[4.9%] rounded-full cursor-pointer active:scale-95 transition-transform z-20"
+        />
 
+        {/* 4. Bouton SOS latéral (Bord gauche) */}
         <button
           type="button"
-          onClick={() => setViewMode('fullscreen')}
-          className={`flex items-center space-x-1.5 px-3 py-1 rounded-full transition-all ${
-            viewMode === 'fullscreen'
-              ? 'bg-[#2b3052] text-white font-medium shadow'
-              : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <Maximize2 className="w-3.5 h-3.5" />
-          <span>Plein écran</span>
-        </button>
-      </header>
+          aria-label="SOS Urgence"
+          onClick={handleSosClick}
+          className="absolute top-[17.2%] left-0 w-[26%] h-[5.5%] rounded-r-full cursor-pointer active:scale-95 transition-transform z-20"
+        />
 
-      {/* Main Content Area */}
-      <main className="w-full h-screen flex items-center justify-center p-2 sm:p-6 overflow-auto">
-        {viewMode === 'fullscreen' ? (
-          /* Fullscreen Mobile View */
-          <div className="w-full h-full max-w-[480px] bg-[#0c0d1e] shadow-2xl overflow-hidden relative">
-            <PhoneScreen />
-          </div>
-        ) : viewMode === 'split' ? (
-          /* Side by Side Comparison */
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 mt-12 py-6">
-            {/* Original Uploaded Image */}
-            <div className="flex flex-col items-center">
-              <span className="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2 flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5 text-amber-400" /> Image originale
-              </span>
-              <div className="w-[390px] h-[844px] rounded-[48px] overflow-hidden border-[6px] border-[#20233b] shadow-2xl bg-black">
-                <img
-                  src="/reference.png"
-                  alt="Original TAO screenshot"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
+        {/* 5. Bouton Filtres / Égaliseur (Bas Droite) */}
+        <button
+          type="button"
+          aria-label="Filtres"
+          onClick={handleFilterClick}
+          className="absolute bottom-[18.2%] right-[4.8%] w-[12.5%] h-[5.6%] rounded-full cursor-pointer active:scale-95 transition-transform z-20"
+        />
 
-            {/* Generated Interactive App */}
-            <div className="flex flex-col items-center">
-              <span className="text-xs uppercase tracking-wider text-teal-400 font-semibold mb-2 flex items-center gap-1.5">
-                <Smartphone className="w-3.5 h-3.5 text-teal-400" /> Application réplique
-              </span>
-              <div className="relative w-[390px] h-[844px] rounded-[48px] overflow-hidden border-[8px] border-[#22253f] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.9)] bg-[#0c0d1e]">
-                {/* Smartphone speaker notch */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-4 bg-black rounded-full z-40 pointer-events-none flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#111322] border border-white/10 -mr-6"></div>
-                </div>
-                <PhoneScreen />
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* Standard Phone Mockup View */
-          <div className="relative w-[390px] h-[844px] rounded-[48px] overflow-hidden border-[8px] border-[#22253f] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.95)] bg-[#0c0d1e] mt-10">
-            {/* Top Camera Punch-hole (Small discrete dot) */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-black/90 border border-white/10 z-40 pointer-events-none"></div>
-            
-            {/* Phone Screen Component */}
-            <PhoneScreen />
+        {/* 6. Bouton Cible / Géolocalisation (Bas Droite) */}
+        <button
+          type="button"
+          aria-label="Recentrer"
+          onClick={handleLocateClick}
+          className="absolute bottom-[11.6%] right-[4.8%] w-[12.5%] h-[5.6%] rounded-full cursor-pointer active:scale-95 transition-transform z-20"
+        />
+
+        {/* 7. Barre de navigation inférieure (4 Onglets) */}
+        {/* Onglet Accueil */}
+        <button
+          type="button"
+          aria-label="Accueil"
+          onClick={() => handleTabClick('accueil')}
+          className="absolute bottom-[4.2%] left-[4%] w-[22%] h-[7.8%] rounded-xl cursor-pointer active:opacity-70 transition-opacity z-20"
+        />
+
+        {/* Onglet Horaires */}
+        <button
+          type="button"
+          aria-label="Horaires"
+          onClick={() => handleTabClick('horaires')}
+          className="absolute bottom-[4.2%] left-[27%] w-[22%] h-[7.8%] cursor-pointer active:opacity-70 transition-opacity z-20"
+        />
+
+        {/* Onglet Trafic */}
+        <button
+          type="button"
+          aria-label="Trafic"
+          onClick={() => handleTabClick('trafic')}
+          className="absolute bottom-[4.2%] left-[51%] w-[22%] h-[7.8%] cursor-pointer active:opacity-70 transition-opacity z-20"
+        />
+
+        {/* Onglet TAO */}
+        <button
+          type="button"
+          aria-label="TAO"
+          onClick={() => handleTabClick('tao')}
+          className="absolute bottom-[4.2%] left-[75%] w-[21%] h-[7.8%] cursor-pointer active:opacity-70 transition-opacity z-20"
+        />
+
+        {/* 8. Touches de navigation Android (en bas) */}
+        <button
+          type="button"
+          aria-label="Applications récentes"
+          onClick={() => showFeedback('Récents (Android)')}
+          className="absolute bottom-0 left-[15%] w-[18%] h-[4.2%] cursor-pointer active:opacity-50 z-20"
+        />
+        <button
+          type="button"
+          aria-label="Accueil système"
+          onClick={() => showFeedback('Accueil (Android)')}
+          className="absolute bottom-0 left-[41%] w-[18%] h-[4.2%] cursor-pointer active:opacity-50 z-20"
+        />
+        <button
+          type="button"
+          aria-label="Retour arrière"
+          onClick={() => showFeedback('Retour (Android)')}
+          className="absolute bottom-0 left-[67%] w-[18%] h-[4.2%] cursor-pointer active:opacity-50 z-20"
+        />
+
+        {/* Feedback visuel lors du clic/toucher */}
+        {toastMessage && (
+          <div className="absolute top-[10%] left-1/2 -translate-x-1/2 bg-[#1b1e38]/95 border border-[#3b3e68] text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl backdrop-blur-md z-50 animate-bounce pointer-events-none">
+            {toastMessage}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

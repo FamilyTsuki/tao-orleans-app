@@ -24,3 +24,4 @@ npm install
 npm run dev
 ```
 L'application est accessible sur `http://localhost:3000/`.
+
